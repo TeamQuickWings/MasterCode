@@ -1,0 +1,11 @@
+#include "plane.h"
+#include <stdio.h>
+
+struct Plane makePlane(char* file){
+
+  FILE *file = fopen(file);
+  if(file == NULL){ printf("Plane file could not be opened\n"); exit(-1); }
+
+  
+
+}
