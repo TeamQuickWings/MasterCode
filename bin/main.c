@@ -1,5 +1,6 @@
 #include "plane.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 
@@ -16,7 +17,36 @@ int main(int argc, char* argv[]){
 
     if(strcmp("-f", argv[1]) == 0){
 
-      plane = makePlane(argv[2]);
+      char *directory = "parameters";
+      int lenFile = strlen(argv[2]);
+      int lenDir = strlen(directory);
+
+      char *filename = (char *)malloc(sizeof(char) * (lenFile + lenDir + 1));
+      if(filename == NULL){
+
+	printf("Could not create pathway name!\n");
+	return -1;
+
+      }
+
+      int i;
+      for(i = 0; i < lenDir; i++){
+
+	filename[i] = directory[i];
+
+      }
+
+      filename[lenDir] = '/';
+
+      for(i = 0; i < lenFile; i++){
+
+	filename[lenDir + 1 + i] = argv[2][i];
+
+      }
+
+      plane = makePlane(filename);
+
+      free(filename);
 
     }
 
