@@ -2,6 +2,7 @@
 #define MYFUNCTIONS_H
 
 int subStringIndex(char *haystack, char *needle);
-double getDouble(const char *str);
+double *getDouble(const char *str);
+double *getDoubleTerm(void);
 
 #endif

@@ -47,9 +47,10 @@ int subStringIndex(char *haystack, char *needle){
   Function that returns a double of the inputted string. Exits with error
   code -1 if the inputted string can not be converted to a double
 */
-double getDouble(const char *str){
+double *getDouble(const char *str){
 
-  double num = 0;
+  double temp = 0;
+  double *num = &temp;
   int dec = -1;
   int pos = 1;
   int index = 0;
@@ -57,8 +58,7 @@ double getDouble(const char *str){
 
   if(len < 1){
 
-    printf("Invaild input for a double: %s\n", str);
-    exit(-1);
+    return NULL;
 
   }
 
@@ -73,12 +73,11 @@ double getDouble(const char *str){
 
     if(isdigit(str[index]) == 0){
 
-      printf("Invalid input for a double: %s\n", str);
-      exit(-1);
+      return NULL;
 
     }
 
-    num = (num * 10) + str[index] - '0';
+    *num = (*num * 10) + str[index] - '0';
     index++;
 
   }
@@ -93,15 +92,83 @@ double getDouble(const char *str){
 
     if(isdigit(str[index]) == 0){
 
-      printf("Invalid input for a double: %s\n", str);
-      exit(-1);
+      return NULL;
 
     }
 
-    num = num + ((str[index] - '0') * pow(10, dec--));
+    *num = *num + ((str[index] - '0') * pow(10, dec--));
     index++;
 
   }
+
+  *num = *num * pos;
+
+  return num;
+
+}
+
+/*
+  Function that returns a double of the inputted string. Exits with error
+  code -1 if the inputted string can not be converted to a double
+*/
+double *getDoubleTerm(void){
+
+  char str[10];
+  scanf("%s", str);
+
+  double temp = 0;
+  double *num = &temp;
+  int dec = -1;
+  int pos = 1;
+  int index = 0;
+  int len = strlen(str);
+
+  if(len < 1){
+
+    return NULL;
+
+  }
+
+  if(str[0] == '-'){
+
+    pos = -1;
+    index++;
+
+  }
+
+  while(index < len && str[index] != '.'){
+
+    if(isdigit(str[index]) == 0){
+
+      return NULL;
+
+    }
+
+    *num = (*num * 10) + str[index] - '0';
+    index++;
+
+  }
+
+  if(index != len){
+
+    if(str[index] == '.'){ index++; }
+
+  }
+
+  while(index < len){
+
+    if(isdigit(str[index]) == 0){
+
+      return NULL;
+
+    }
+
+    *num = *num + ((str[index] - '0') * pow(10, dec--));
+    index++;
+
+  }
+
+  *num = *num * pos;
 
   return num;
 

@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include "plane.h"
 #include "myfunctions.h"
+#include <ctype.h>
 
 int main(void){
 
-  printf("%s\n", paramToString(S_ANGLE));
-
+  struct Plane plane = newPlane("parameters/dev/testfile");
+  
   return 0;
 
 }
