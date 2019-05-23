@@ -47,14 +47,21 @@ int subStringIndex(char *haystack, char *needle){
   Function that returns a double of the inputted string. Exits with error
   code -1 if the inputted string can not be converted to a double
 */
-double *getDouble(const char *str){
+double *getDouble(const char *str, int size){
 
   double temp = 0;
   double *num = &temp;
   int dec = -1;
   int pos = 1;
   int index = 0;
-  int len = strlen(str);
+
+  int len = 0;
+  while(len < size){
+
+    if(str[len] == '\0' || str[len] == '\n'){ break; }
+    len++;
+
+  }
 
   if(len < 1){
 

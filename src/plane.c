@@ -2,7 +2,6 @@
 
 #include "plane.h"
 #include "myfunctions.h"
-#include "csv.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,7 +37,11 @@ enum Param stringToParam(char* str){
 
   }else if(subStringIndex(str, "fuel_weight") >= 0){ return F_WGHT;
 
+  }else if(subStringIndex(str, "cD0") >= 0) { return CD0;
+
   }else if(subStringIndex(str, "span_efficiency_factor") >= 0){ return SPAN_EFF_FCTR;
+
+  }else if(subStringIndex(str, "specific_fuel_consumption") >= 0){ return SFC;
 
   }else if(subStringIndex(str, "propeller_efficiency") >= 0){ return PROP_EFF;
 
@@ -72,7 +75,7 @@ char* paramToString(enum Param param){
 
   case CRUISE_ALT: return "cruise_altitude";
 
-  case AOA_C: return "angle_of_attack_at_cruise";
+  case AOA_C: return "aoa_at_cruise";
 
   case CRUISE_VEL: return "cruise_velocity";
 
@@ -84,7 +87,11 @@ char* paramToString(enum Param param){
 
   case C_WGHT: return "cagro_weight";
 
+  case CD0: return "cD0";
+
   case SPAN_EFF_FCTR: return "span_efficiency_factor";
+
+  case SFC: return "specific_fuel_consumption";
 
   case PROP_EFF: return "propeller_efficiency";
 
@@ -105,7 +112,6 @@ struct Plane makePlaneStruct(int type){
 
   struct Plane plane;
   plane.type = type;
-  plane.angles = NULL;
   plane.params = NULL;
   plane.paramv = NULL;
   plane.param_size = 0;
@@ -203,7 +209,7 @@ double getValue(struct Plane* plane, enum Param param){
 
 }
 
-double doubleSubString(char* str, enum Param param){
+double* doubleSubString(char* str, enum Param param){
 
   int start = strlen(paramToString(param));
 
@@ -218,7 +224,8 @@ double doubleSubString(char* str, enum Param param){
 
   }
 
-  char* num = (char *)malloc(sizeof(char) * (end - start));
+  char num[100];
+
   int i;
   for(i = start; i < end; i++){
 
@@ -226,19 +233,68 @@ double doubleSubString(char* str, enum Param param){
 
   }
 
-  double* ret = getDouble(num);
+  num[i - start] = '\0';
 
-  return *ret;
+  double* ret = getDouble(num, 100);
+
+  return ret;
 
 }
+
+int getAngles(char* str, double* angles){
+
+  char first[10];
+  char last[10];
+  char del = ' ';
+  int index1 = -1;
+  int index2 = -1;
+  int len = strlen(str);
+
+  int i;
+  for(i = 0; i < len; i++){
+
+    if(index1 == -1 && str[i] == del){ index1 = i; }
+    if(index1 != -1 && index1 != i && str[i] == del){ index2 = i; break; }
+
+  }
+
+  index1++;
+  index2++;
+  for(i = index1; i < index2; i++){
+
+    first[i - index1] = str[i];
+
+  }
+
+  for(i = index2; i < len; i++){
+
+    last[i - index2] = str[i];
+
+  }
+
+  if(index2 == -1){ return -1; }
+
+  first[index2 - index1 - 1] = '\0';
+  last[len - index2 - 1] = '\0';
+
+  double* test = getDouble(first, 10);
+  if(test == NULL){ return -1; }
+  angles[0] = *test;
+  test = getDouble(last, 10);
+  if(test == NULL){ return -1; }
+  angles[1] = *test;
+  
+  return 0;
+
+}
+
+
 
 /*
   method that will return a Plane struct using the information in the
   inputted file
  */
-struct Plane newPlane(char* filename){
-
-  printf("filename: %s\n", filename);
+struct Plane newPlane(char* filename, int type){
 
   FILE *file = fopen(filename, "r");
   if(file == NULL){ printf("Plane file could not be opened\n"); exit(-1); }
@@ -246,16 +302,96 @@ struct Plane newPlane(char* filename){
   char* line = NULL;
   size_t len = 0;
   ssize_t read;
-  
+
+  struct Plane plane = makePlaneStruct(type);
+  int angles = 0;
+
+  //loop to collect the enum parameters and
   while((read = getline(&line, &len, file)) != -1){
 
-    if(subStringIndex(line, "chord") >=0){
+    enum Param param = stringToParam(line);
+    char* str = paramToString(param);
 
-      printf("%s\n", line);
+    if(str != NULL){
+
+      double* testd = doubleSubString(line, param);
+      if(testd == NULL){
+
+	printf("Invalid number in line %s\n", line);
+	exit(-1);
+
+      }
+
+      int testi = addParam(&plane, param, *testd);
+
+    }
+
+    if(subStringIndex(line, "angles:") >= 0){
+
+      int test = getAngles(line, plane.angles);
+      if(test != 0){
+
+	printf("Invalid angle input! %s\n", line);
+
+      }else if(plane.angles[0] > plane.angles[1]){
+
+	printf("Invalid inputs, the first angle is larger that the second!\n");
+
+      }else{ angles = 1; }
+      
+    }
+    
+  }
+
+  if(angles == 0){
+
+    int good = 1;
+    while(good){
+
+      int test = 1;
+      while(test){
+
+	printf("Input the first angle: ");
+	double* d = getDoubleTerm();
+	if(d == NULL){ printf("Invalid input!\n");
+
+	}else{
+
+	  plane.angles[0] = *d;
+	  test = 0;
+
+	}
+
+      }
+
+      test = 1;
+
+      while(test){
+
+	printf("Input the second angle: ");
+	double* d = getDoubleTerm();
+	if(d == NULL){ printf("Invalid input!\n");
+
+	}else{
+
+	  plane.angles[1] = *d;
+	  test = 0;
+
+	}
+
+      }
+
+      if(plane.angles[0] > plane.angles[1]){
+
+	printf("Invalid inputs, the first angle is larger that the second!\n");
+
+      }else{ good = 0; }
 
     }
 
   }
+
+  return plane;
 
 }
 
