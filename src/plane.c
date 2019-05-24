@@ -288,13 +288,49 @@ int getAngles(char* str, double* angles){
 
 }
 
+int addDouble(struct Plane* plane, double alpha, double cl, double cd){
 
+  double *newa = (double *)malloc(sizeof(double) * (plane->param_size + 1));
+  double *newl = (double *)malloc(sizeof(double) * (plane->param_size + 1));
+  double *newd = (double *)malloc(sizeof(double) * (plane->param_size + 1));
+  if(newa == NULL || newl == NULL || newd == NULL){
+
+    printf("Could not add double set!\n");
+    exit(-1);
+
+  }
+
+  int i;
+  for(i = 0; i < plane->xflr_size; i++){
+
+    newa[i] = plane->xflr_angles[i];
+    newl[i] = plane->xflr_cl[i];
+    newd[i] = plane->xflr_cd[i];
+
+  }
+
+  newa[plane->xflr_size] = alpha;
+  newl[plane->xflr_size] = cl;
+  newd[plane->xflr_size] = cd;
+  plane->xflr_size++;
+
+  free(plane->xflr_angles);
+  free(plane->xflr_cl);
+  free(plane->xflr_cd);
+
+  plane->xflr_angles = newa;
+  plane->xflr_cl = newl;
+  plane->xflr_cd = newd;
+
+  return 0;
+
+}
 
 /*
   method that will return a Plane struct using the information in the
   inputted file
  */
-struct Plane newPlane(char* filename, int type){
+struct Plane newPlane(char* filename, int type, int vsp){
 
   FILE *file = fopen(filename, "r");
   if(file == NULL){ printf("Plane file could not be opened\n"); exit(-1); }
@@ -342,6 +378,26 @@ struct Plane newPlane(char* filename, int type){
     }
     
   }
+
+  fclose(file);
+
+  file = fopen(filename, "r");
+  if(file == NULL){ printf("Plane file could not be opened\n"); exit(-1); }
+
+  int header = 0;
+  while((read = getline(&line, &len, file)) != -1){
+
+    if(subStringIndex(line, "alpha") >= 0 && subStringIndex(line, "CL") >= 0 && subStringIndex(line, "CD") >= 0){ header = 1; }
+
+    if(header){
+
+      
+
+    }
+
+  }
+
+  fclose(file);
 
   if(angles == 0){
 

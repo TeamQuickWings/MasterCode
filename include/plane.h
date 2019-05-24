@@ -13,6 +13,10 @@ struct Plane{
   enum Param *params; // parameters
   double *paramv; // value of the parameters
   int param_size;
+  double* xflr_angles;
+  double* xflr_cl;
+  double* xflr_cd;
+  int xflr_size;
 
 };
 
@@ -24,6 +28,7 @@ int addParam(struct Plane* plane, enum Param param, double value);
 double getValue(struct Plane* plane, enum Param param);
 double* doubleSubString(char* str, enum Param param);
 int getAngles(char* str, double* angles);
-struct Plane newPlane(char* file, int type);
+int addDouble(struct Plane* plane, double alpha, double cl, double cd);
+struct Plane newPlane(char* file, int type, int vsp);
 
 #endif

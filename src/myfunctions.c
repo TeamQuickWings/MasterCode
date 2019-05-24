@@ -180,3 +180,24 @@ double *getDoubleTerm(void){
   return num;
 
 }
+
+int getDoubles(char* str, double* doubles, int* size){
+
+  int len = strlen(str);
+  int i;
+  int count = 0;
+
+  for(i = 0; i < len - 1; i++){
+
+    if(4isdigit(str[i]) != 0 && isdigit(str[i + 1]) == 0 && str[i + 1] != '-' && str[i + 1] != '.'){ count++; }
+
+  }
+
+  if(isdigit(str[len - 1]) != 0 || str[len - 1] == '.'){ count++; }
+
+  printf("count: %d\n", count);
+  
+
+  return 0;
+
+}

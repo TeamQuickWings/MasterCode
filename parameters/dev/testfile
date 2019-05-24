@@ -1,7 +1,7 @@
-angles: 15 12
+angles: -12 15
 wingspan: 48
 chord: 4.75
-swept_angle: 0
+swept_angle: 0.5
 cruise_altitude: 5000
 aoa_at_cruise: 0.5
 target_cruise_velocity: 180
