@@ -2,6 +2,7 @@
 #include "plane.h"
 #include "myfunctions.h"
 #include <ctype.h>
+#include <stdlib.h>
 
 int main(void){
 
@@ -18,10 +19,18 @@ int main(void){
 
   printf("angles: %lf %lf\n", plane.angles[0], plane.angles[1]);
   */
-
+  
   double* values;
   int size;
-  int test = getDoubles(" -20.000  -1.8463   0.02623   0.02291  -0.0401  1.0000  0.0058  -22.0116   0.0000   10.", values, &size);
+  values = getDoubles("20", &size);
+
+  int i;
+  printf("size: %d\n", size);
+  for(i = 0; i < size; i++){
+
+    printf("%lf\n", values[i]);
+
+  }
 
   return 0; 
 

@@ -233,9 +233,7 @@ double* doubleSubString(char* str, enum Param param){
 
   }
 
-  num[i - start] = '\0';
-
-  double* ret = getDouble(num, 100);
+  double* ret = getDouble(num, end - start);
 
   return ret;
 
@@ -274,13 +272,10 @@ int getAngles(char* str, double* angles){
 
   if(index2 == -1){ return -1; }
 
-  first[index2 - index1 - 1] = '\0';
-  last[len - index2 - 1] = '\0';
-
-  double* test = getDouble(first, 10);
+  double* test = getDouble(first, index2 - index1 - 1);
   if(test == NULL){ return -1; }
   angles[0] = *test;
-  test = getDouble(last, 10);
+  test = getDouble(last, len - index2 - 1);
   if(test == NULL){ return -1; }
   angles[1] = *test;
   
@@ -328,7 +323,7 @@ int addDouble(struct Plane* plane, double alpha, double cl, double cd){
 
 /*
   method that will return a Plane struct using the information in the
-  inputted file
+  inputted file, type of plane, vsp boolean
  */
 struct Plane newPlane(char* filename, int type, int vsp){
 
@@ -354,11 +349,8 @@ struct Plane newPlane(char* filename, int type, int vsp){
       if(testd == NULL){
 
 	printf("Invalid number in line %s\n", line);
-	exit(-1);
 
-      }
-
-      int testi = addParam(&plane, param, *testd);
+      }else{ addParam(&plane, param, *testd); }
 
     }
 
@@ -387,13 +379,23 @@ struct Plane newPlane(char* filename, int type, int vsp){
   int header = 0;
   while((read = getline(&line, &len, file)) != -1){
 
-    if(subStringIndex(line, "alpha") >= 0 && subStringIndex(line, "CL") >= 0 && subStringIndex(line, "CD") >= 0){ header = 1; }
-
     if(header){
 
-      
+      int size;
+      double* doubles = getDoubles(line, &size);
+      if(doubles != NULL && size != 0){
+
+	if(doubles[0] >= plane.angles[0] && doubles[0] <= plane.angles[1]){
+	  
+	  printf("angle: %lf\n", doubles[0]);
+
+	}
+
+      }
 
     }
+
+    if(subStringIndex(line, "alpha") >= 0 && subStringIndex(line, "CL") >= 0 && subStringIndex(line, "CD") >= 0){ header = 1; }
 
   }
 

@@ -44,7 +44,7 @@ int main(int argc, char* argv[]){
 
       }
 
-      plane = newPlane(filename, 0);
+      plane = newPlane(filename, 0, 0);
 
       free(filename);
 

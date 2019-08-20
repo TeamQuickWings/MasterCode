@@ -47,27 +47,15 @@ int subStringIndex(char *haystack, char *needle){
   Function that returns a double of the inputted string. Exits with error
   code -1 if the inputted string can not be converted to a double
 */
-double *getDouble(const char *str, int size){
+double *getDouble(char *str, int size){
 
   double temp = 0;
   double *num = &temp;
   int dec = -1;
   int pos = 1;
   int index = 0;
-
-  int len = 0;
-  while(len < size){
-
-    if(str[len] == '\0' || str[len] == '\n'){ break; }
-    len++;
-
-  }
-
-  if(len < 1){
-
-    return NULL;
-
-  }
+  
+  if(size < 1 || size > strlen(str)){ return NULL; }
 
   if(str[0] == '-'){
 
@@ -76,32 +64,24 @@ double *getDouble(const char *str, int size){
 
   }
 
-  while(index < len && str[index] != '.'){
+  while(index < size && str[index] != '.'){
 
-    if(isdigit(str[index]) == 0){
-
-      return NULL;
-
-    }
+    if(isdigit(str[index]) == 0){ return NULL; }
 
     *num = (*num * 10) + str[index] - '0';
     index++;
 
   }
 
-  if(index != len){
+  if(index != size){
 
     if(str[index] == '.'){ index++; }
 
   }
 
-  while(index < len){
+  while(index < size){
 
-    if(isdigit(str[index]) == 0){
-
-      return NULL;
-
-    }
+    if(isdigit(str[index]) == 0){ return NULL; }
 
     *num = *num + ((str[index] - '0') * pow(10, dec--));
     index++;
@@ -181,23 +161,132 @@ double *getDoubleTerm(void){
 
 }
 
-int getDoubles(char* str, double* doubles, int* size){
+/*
+  Function returns an array of doubles parsed from the inputted string, a points to a size variable is also inputted and will have a size greater than zero is numbers were parsed. If it fails it will return NULL
+  code NULL - failed
+ */
+double* getDoubles(char* str, int* size){
 
   int len = strlen(str);
-  int i;
-  int count = 0;
+  int i = 0;
+  *size = 0;
+  int largest = 0;
+  int start = 0, end = 0;
+  while(start < len && end < len){
 
-  for(i = 0; i < len - 1; i++){
+    while(isdigit(str[start]) == 0 && str[start] != '-'){
 
-    if(4isdigit(str[i]) != 0 && isdigit(str[i + 1]) == 0 && str[i + 1] != '-' && str[i + 1] != '.'){ count++; }
+      start++;
+      end++;
+
+    }
+    
+    while(isdigit(str[end + 1]) != 0 || str[end + 1] == '.'){
+    
+      end++;
+
+    }
+
+    if(end > len){ break; }
+
+    if((end - start) > largest){ largest = end - start; }
+
+    if(start - end == 0){
+
+
+      if(str[end] != '-'){ *size = *size + 1; }
+
+    }else{ *size = *size + 1; }
+
+    end++;
+    start = end;
 
   }
 
-  if(isdigit(str[len - 1]) != 0 || str[len - 1] == '.'){ count++; }
-
-  printf("count: %d\n", count);
+  start = 0;
+  end = 0;
   
+  double* temp = (double *)malloc(sizeof(double) * *size);
+  char* double_str = (char *)malloc(sizeof(char) * (largest + 2));
+  if(double_str == NULL || temp == NULL){
 
-  return 0;
+    printf("Failed to make double string!\n");
+    return NULL;
+
+  }
+  
+  while(start < len && end < len){
+
+    while(isdigit(str[start]) == 0 && str[start] != '-'){
+
+      start++;
+      end++;
+
+    }
+    
+    while(isdigit(str[end + 1]) != 0 || str[end + 1] == '.'){
+    
+      end++;
+
+    }
+
+    int index = start;
+    int j;
+    for(j = 0; j < (end - start + 1); j++){
+
+      double_str[j] = str[index];
+      index++;
+
+    }
+    double_str[index] = 3;
+
+    double* test = getDouble(double_str, end - start + 1);
+    if(test == NULL){
+
+      printf("Failed!\n");
+      return NULL;
+
+    }
+
+    if(start - end == 0){
+
+
+      if(str[end] != '-'){
+
+	double* test = getDouble(double_str, end - start + 1);
+	if(test == NULL){
+
+	  printf("Failed!\n");
+	  return NULL;
+
+	}
+	
+	temp[i] = *test;
+	i++;
+
+      }
+
+    }else{
+
+      double* test = getDouble(double_str, end - start + 1);
+      if(test == NULL){
+
+	printf("Failed!\n");
+	return NULL;
+
+      }
+
+    }
+
+    end++;
+    start = end;
+
+  }
+
+  free(double_str);
+
+  if(*size == 0){ return NULL; }
+
+  return temp;
 
 }
