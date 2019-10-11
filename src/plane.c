@@ -288,10 +288,16 @@ int getAngles(char* str, double* angles){
 }
 
 int addDouble(struct Plane* plane, double alpha, double cl, double cd){
+
+  printf("%p\n", &plane->xflr_size);
+  double *newa, *newl, *newd;
+  newa = (double *)malloc(sizeof(double) * (plane->xflr_size + 1));
+  printf("%p\n", &plane->xflr_size);
+  newl = (double *)malloc(sizeof(double) * (plane->xflr_size + 1));
+  printf("%p\n", &plane->xflr_size);
+  newd = (double *)malloc(sizeof(double) * (plane->xflr_size + 1));
+  printf("%p\n", &plane->xflr_size);
   
-  double *newa = (double *)malloc(sizeof(double) * (plane->xflr_size + 1));
-  double *newl = (double *)malloc(sizeof(double) * (plane->xflr_size + 1));
-  double *newd = (double *)malloc(sizeof(double) * (plane->xflr_size + 1));
   if(newa == NULL || newl == NULL || newd == NULL){
 
     printf("Could not add double set!\n");
@@ -436,9 +442,9 @@ struct Plane newPlane(char* paramfile, char* datafile, int vsp, int type){
       int size;
       double* doubles = getDoubles(line, &size);
       if(doubles != NULL && size != 0){
-
+	
 	if(doubles[0] >= plane.angles[0] && doubles[0] <= plane.angles[1]){
-
+	  
 	  printf("angle: %lf\n", doubles[0]);
 	  addDouble(&plane, doubles[0], doubles[1], doubles[2]);
 
