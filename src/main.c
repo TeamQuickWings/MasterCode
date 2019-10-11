@@ -1,4 +1,5 @@
 #include "plane.h"
+#include "myfunctions.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,42 +14,91 @@ int main(int argc, char* argv[]){
 
   if(argc == 1){ printf("No input\n"); return 0;
 
-  }else if(argc == 3){
+  }else{
 
-    if(strcmp("-f", argv[1]) == 0){
+    char *dir1 = "parameters/";
+    char *dir2 = "xflr5/";
+    char *dir3 = "vsp/";
+    int lenFile1 = strlen(argv[1]);
+    int lenDir1 = strlen(dir1);
 
-      char *directory = "parameters";
-      int lenFile = strlen(argv[2]);
-      int lenDir = strlen(directory);
+    int i, index = 0;
+    int vsp = 0;
+    for(i = 1; i < argc; i++){
 
-      char *filename = (char *)malloc(sizeof(char) * (lenFile + lenDir + 1));
-      if(filename == NULL){
+      index++;
+      
+      if(subStringIndex(argv[i], "-x") >= 0){
+	
+	vsp = 1;
+	break;
 
-	printf("Could not create pathway name!\n");
-	return -1;
+      }else if(subStringIndex(argv[i], "-o") >= 0){
 
-      }
-
-      int i;
-      for(i = 0; i < lenDir; i++){
-
-	filename[i] = directory[i];
-
-      }
-
-      filename[lenDir] = '/';
-
-      for(i = 0; i < lenFile; i++){
-
-	filename[lenDir + 1 + i] = argv[2][i];
+	vsp = 2;
+	break;
 
       }
-
-      plane = newPlane(filename, 0, 0);
-
-      free(filename);
 
     }
+
+    int lenFile2 = strlen(argv[index + 1]);
+    int lenDir2 = strlen(dir2);
+    int lenDir3 = strlen(dir3);
+    
+    char *file1 = (char *)malloc(sizeof(char) * (lenFile1 + lenDir1));
+    char *file2;
+    if(vsp == 1){
+
+      file2 = (char *)malloc(sizeof(char) * (lenFile2 + lenDir2));
+
+    }else if(vsp == 2){
+
+      file2 = (char *)malloc(sizeof(char) * (lenFile2 + lenDir3));
+
+    }
+    
+    if(file1 == NULL || file2 == NULL){
+
+      printf("Could not create pathway name!\n");
+      return -1;
+
+    }
+
+    for(i = 0; i < lenDir1; i++){ file1[i] = dir1[i]; }
+
+    for(i = 0; i < lenFile1; i++){
+
+      file1[lenDir1 + i] = argv[1][i];
+
+    }
+
+    if(vsp == 1){
+      
+      for(i = 0; i < lenDir2; i++){ file2[i] = dir2[i]; }
+
+      for(i = 0; i < lenFile2; i++){
+
+	file2[lenDir2 + i] = argv[index + 1][i];
+
+      }
+
+    }else if(vsp == 2){
+
+      for(i = 0; i < lenDir2; i++){ file2[i] = dir3[i]; }
+
+      for(i = 0; i < lenFile2; i++){
+
+	file2[lenDir3 + i] = argv[index + 1][i];
+
+      }
+
+    }
+
+    plane = newPlane(file1, file2, 0, 0);
+
+    free(file1);
+    free(file2);
 
   }
 

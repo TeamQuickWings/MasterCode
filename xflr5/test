@@ -1,21 +1,3 @@
-angles: -12 15
-wingspan: 36
-chord: 4.75
-swept_angle: 0.5
-cruise_altitude: 5000
-aoa_at_cruise: 0.5
-target_cruise_velocity: 180
-max_velocity: 250
-aircraft_weight: 2500
-fuel_weight: 810
-cargo_weight: 1200
-cD0: 0.012985853989425476
-span_efficiency_factor: 0.8
-specific_fuel_consumption: 0.77
-propeller_efficiency: 0.7
-engine_power: 420
-n_structure: 6
-
 xflr5 v6.39
 
  Calculated polar for: C:/Users/Andrew Scherping/Documents/XFLR5/NACA24112.dat

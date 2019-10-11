@@ -115,6 +115,10 @@ struct Plane makePlaneStruct(int type){
   plane.params = NULL;
   plane.paramv = NULL;
   plane.param_size = 0;
+  plane.xflr_angles = NULL;
+  plane.xflr_cl = NULL;
+  plane.xflr_cd = NULL;
+  plane.xflr_size = 0;
 
   return plane;
 
@@ -284,10 +288,10 @@ int getAngles(char* str, double* angles){
 }
 
 int addDouble(struct Plane* plane, double alpha, double cl, double cd){
-
-  double *newa = (double *)malloc(sizeof(double) * (plane->param_size + 1));
-  double *newl = (double *)malloc(sizeof(double) * (plane->param_size + 1));
-  double *newd = (double *)malloc(sizeof(double) * (plane->param_size + 1));
+  
+  double *newa = (double *)malloc(sizeof(double) * (plane->xflr_size + 1));
+  double *newl = (double *)malloc(sizeof(double) * (plane->xflr_size + 1));
+  double *newd = (double *)malloc(sizeof(double) * (plane->xflr_size + 1));
   if(newa == NULL || newl == NULL || newd == NULL){
 
     printf("Could not add double set!\n");
@@ -297,7 +301,7 @@ int addDouble(struct Plane* plane, double alpha, double cl, double cd){
 
   int i;
   for(i = 0; i < plane->xflr_size; i++){
-
+    
     newa[i] = plane->xflr_angles[i];
     newl[i] = plane->xflr_cl[i];
     newd[i] = plane->xflr_cd[i];
@@ -308,7 +312,7 @@ int addDouble(struct Plane* plane, double alpha, double cl, double cd){
   newl[plane->xflr_size] = cl;
   newd[plane->xflr_size] = cd;
   plane->xflr_size++;
-
+  
   free(plane->xflr_angles);
   free(plane->xflr_cl);
   free(plane->xflr_cd);
@@ -325,10 +329,10 @@ int addDouble(struct Plane* plane, double alpha, double cl, double cd){
   method that will return a Plane struct using the information in the
   inputted file, type of plane, vsp boolean
  */
-struct Plane newPlane(char* filename, int type, int vsp){
+struct Plane newPlane(char* paramfile, char* datafile, int vsp, int type){
 
-  FILE *file = fopen(filename, "r");
-  if(file == NULL){ printf("Plane file could not be opened\n"); exit(-1); }
+  FILE *pfile = fopen(paramfile, "r");
+  if(pfile == NULL){ printf("Plane file could not be opened\n"); exit(-1); }
 
   char* line = NULL;
   size_t len = 0;
@@ -338,7 +342,7 @@ struct Plane newPlane(char* filename, int type, int vsp){
   int angles = 0;
 
   //loop to collect the enum parameters and
-  while((read = getline(&line, &len, file)) != -1){
+  while((read = getline(&line, &len, pfile)) != -1){
 
     enum Param param = stringToParam(line);
     char* str = paramToString(param);
@@ -371,38 +375,10 @@ struct Plane newPlane(char* filename, int type, int vsp){
     
   }
 
-  fclose(file);
-
-  file = fopen(filename, "r");
-  if(file == NULL){ printf("Plane file could not be opened\n"); exit(-1); }
-
-  int header = 0;
-  while((read = getline(&line, &len, file)) != -1){
-
-    if(header){
-
-      int size;
-      double* doubles = getDoubles(line, &size);
-      if(doubles != NULL && size != 0){
-
-	if(doubles[0] >= plane.angles[0] && doubles[0] <= plane.angles[1]){
-	  
-	  printf("angle: %lf\n", doubles[0]);
-
-	}
-
-      }
-
-    }
-
-    if(subStringIndex(line, "alpha") >= 0 && subStringIndex(line, "CL") >= 0 && subStringIndex(line, "CD") >= 0){ header = 1; }
-
-  }
-
-  fclose(file);
+  fclose(pfile);
 
   if(angles == 0){
-
+    
     int good = 1;
     while(good){
 
@@ -448,6 +424,35 @@ struct Plane newPlane(char* filename, int type, int vsp){
     }
 
   }
+
+  FILE * dfile = fopen(datafile, "r");
+  if(dfile == NULL){ printf("Plane file could not be opened\n"); exit(-1); }
+    
+  int header = 0;
+  while((read = getline(&line, &len, dfile)) != -1){
+
+    if(header){
+
+      int size;
+      double* doubles = getDoubles(line, &size);
+      if(doubles != NULL && size != 0){
+
+	if(doubles[0] >= plane.angles[0] && doubles[0] <= plane.angles[1]){
+
+	  printf("angle: %lf\n", doubles[0]);
+	  addDouble(&plane, doubles[0], doubles[1], doubles[2]);
+
+	}
+
+      }
+
+    }
+
+    if(subStringIndex(line, "alpha") >= 0 && subStringIndex(line, "CL") >= 0 && subStringIndex(line, "CD") >= 0){ header = 1; }
+
+  }
+
+  fclose(dfile);
 
   return plane;
 

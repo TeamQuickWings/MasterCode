@@ -29,6 +29,6 @@ double getValue(struct Plane* plane, enum Param param);
 double* doubleSubString(char* str, enum Param param);
 int getAngles(char* str, double* angles);
 int addDouble(struct Plane* plane, double alpha, double cl, double cd);
-struct Plane newPlane(char* file, int type, int vsp);
+struct Plane newPlane(char* paramfile, char* datafile, int vsp, int type);
 
 #endif

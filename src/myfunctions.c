@@ -5,7 +5,7 @@
 #include <ctype.h>
 
 /*
-  Function that returns the index of the beginning of a substring in 
+  Function that returns the index of the beginning of a substring in
   a given string. Returns -1 if the substring was not found.
  */
 int subStringIndex(char *haystack, char *needle){
@@ -170,8 +170,7 @@ double* getDoubles(char* str, int* size){
   int len = strlen(str);
   int i = 0;
   *size = 0;
-  int largest = 0;
-  int start = 0, end = 0;
+  int largest = 0, start = 0, end = 0;
   while(start < len && end < len){
 
     while(isdigit(str[start]) == 0 && str[start] != '-'){
@@ -275,6 +274,9 @@ double* getDoubles(char* str, int* size){
 	return NULL;
 
       }
+
+      temp[i] = *test;
+      i++;
 
     }
 
